@@ -1,0 +1,13 @@
+data/
+.DS_Store
+nohup.out
+*.pyc
+*.log
+*.out
+*.class
+*.jar
+*.iml
+.idea/
+target/
+.vscode/
+.ipynb_checkpoints/
