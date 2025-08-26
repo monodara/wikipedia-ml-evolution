@@ -1,26 +1,26 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# 1. 脚本所在目录：project-root/hadoop/scripts
+# 1. directory containing the script: project-root/hadoop/scripts
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-# 2. Hadoop 根目录：project-root/hadoop
+# 2. Hadoop root directory: project-root/hadoop
 HADOOP_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-# 3. Streaming 代码目录：project-root/hadoop/streaming
+# 3. Streaming code directory: project-root/hadoop/streaming
 STREAM_DIR="$HADOOP_DIR/streaming"
 
-# 4. Mapper/Reducer 脚本的绝对路径
+# 4. Mapper/Reducer script absolute paths
 MAPPER="$STREAM_DIR/mapper_cooccur.py"
 REDUCER="$STREAM_DIR/reducer_cooccur.py"
 
-# 5. Stopwords 文件在项目根目录
+# 5. Stopwords file is located in the project root
 STOPWORDS="$SCRIPT_DIR/../../stopwords.txt"
 
 HDFS_INPUT="/wikipedia-ml"
 HDFS_OUTPUT="/cooccur-outputs"
 
-# 6. 自动判断 HADOOP_HOME
+# 6. automatically check HADOOP_HOME
 if [ -d "$HADOOP_DIR" ] && [ -f "$HADOOP_DIR/libexec/hdfs-config.sh" ]; then
     HADOOP_HOME="$HADOOP_DIR"
 elif [ -d "$HOME/hadoop-3.3.3" ] && [ -f "$HOME/hadoop-3.3.3/libexec/hdfs-config.sh" ]; then

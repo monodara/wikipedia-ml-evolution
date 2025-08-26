@@ -2,29 +2,29 @@
 set -e
 
 ##############################################################################
-# 1. 基本变量
+# 1. Basic Variables
 ##############################################################################
 HADOOP_VERSION=3.3.3
 INSTALL_DIR=/usr/local/hadoop-${HADOOP_VERSION}
 TARBALL=hadoop-${HADOOP_VERSION}.tar.gz
 
-# 下载源
+# download sources
 PRIMARY_URL=https://dlcdn.apache.org/hadoop/common/hadoop-${HADOOP_VERSION}/${TARBALL}
 ARCHIVE_URL=https://archive.apache.org/dist/hadoop/common/hadoop-${HADOOP_VERSION}/${TARBALL}
 MIRROR_URL=https://mirrors.huaweicloud.com/apache/hadoop/common/hadoop-${HADOOP_VERSION}/${TARBALL}
 
-# 端口
+# Ports
 NN_RPC_PORT=9000
 NN_HTTP_PORT=9870
 RM_HTTP_PORT=8088
 
-# 本地 HDFS 存储
+# Local HDFS storage
 HDFS_DATA=$HOME/hadoop-data
 
 echo "=== Hadoop Setup v${HADOOP_VERSION} ==="
 
 ##############################################################################
-# 2. 安装检测：存在即跳过下载／解压
+# 2. Installation Check: Skip download/extraction if exists
 ##############################################################################
 if [ -d "${INSTALL_DIR}" ]; then
   echo "[SKIP] Hadoop already installed at ${INSTALL_DIR}"
@@ -47,7 +47,7 @@ else
   [ -f "${TARBALL}" ] || { echo "ERROR: download failed"; exit 1; }
   tar -xzf "${TARBALL}"
 
-  # 删除旧目录，避免嵌套
+  # Delete old dir to avoid nesting
   [ -d "${INSTALL_DIR}" ] && sudo rm -rf "${INSTALL_DIR}"
   sudo mv "hadoop-${HADOOP_VERSION}" "${INSTALL_DIR}"
   rm -f "${TARBALL}"
@@ -55,11 +55,11 @@ else
 fi
 
 ##############################################################################
-# 3. 环境变量 + Java 11 检测
+# 3. Environment Variables + Java 11 Detection
 ##############################################################################
 JAVA_11_FOUND=false
 
-# macOS Homebrew 安装路径
+# macOS Homebrew installation path
 if [ -d "/usr/local/opt/openjdk@11" ]; then
   export JAVA_HOME=/usr/local/opt/openjdk@11
   JAVA_11_FOUND=true
@@ -67,7 +67,7 @@ elif [ -d "/opt/homebrew/opt/openjdk@11" ]; then
   # Apple Silicon (M1/M2/M3)
   export JAVA_HOME=/opt/homebrew/opt/openjdk@11
   JAVA_11_FOUND=true
-# Linux 常见路径
+# Linux (Ubuntu/Debian)
 elif [ -d "/usr/lib/jvm/java-11-openjdk-amd64" ]; then
   export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
   JAVA_11_FOUND=true
@@ -81,17 +81,17 @@ if [ "$JAVA_11_FOUND" = false ]; then
   exit 1
 fi
 
-# 设置 Hadoop 路径
+# set hadoop path
 export HADOOP_HOME=${INSTALL_DIR}
 export PATH=${JAVA_HOME}/bin:${HADOOP_HOME}/bin:${HADOOP_HOME}/sbin:${PATH}
 
-# 显示使用的 Java 版本
+# show the Java version used
 JAVA_VER=$($JAVA_HOME/bin/java -version 2>&1 | awk -F\" '/version/ {print $2}')
 echo "[INFO] Hadoop will run with Java $JAVA_VER at $JAVA_HOME"
 
 
 ##############################################################################
-# 4. 停止本地守护进程 & 清理 PID
+# 4. Stop Local Daemons & Clean PID
 ##############################################################################
 echo "Stopping existing daemons (local mode)…"
 hdfs --daemon stop namenode        || true
@@ -106,7 +106,7 @@ for role in namenode datanode secondarynamenode resourcemanager nodemanager; do
 done
 
 ##############################################################################
-# 5. 准备日志 & HDFS 目录
+# 5. prepare logs & HDFS dirs
 ##############################################################################
 mkdir -p ${HADOOP_HOME}/logs
 
@@ -115,7 +115,7 @@ mkdir -p "${HDFS_DATA}/name" "${HDFS_DATA}/data"
 chmod -R 755 "${HDFS_DATA}"
 
 ##############################################################################
-# 6. 生成 core-site.xml、hdfs-site.xml、yarn-site.xml
+# 6. generate core-site.xml、hdfs-site.xml、yarn-site.xml
 ##############################################################################
 cat > ${HADOOP_HOME}/etc/hadoop/core-site.xml <<EOF
 <configuration>
@@ -157,7 +157,7 @@ cat > ${HADOOP_HOME}/etc/hadoop/yarn-site.xml <<EOF
 EOF
 
 ##############################################################################
-# 7. 条件格式化 NameNode（首次运行时执行）
+# 7. Format NameNode conditionally (run on first start)
 ##############################################################################
 if [ ! -d "${HDFS_DATA}/name/current" ]; then
   echo "Formatting HDFS NameNode (non-interactive)…"
@@ -167,7 +167,7 @@ else
 fi
 
 ##############################################################################
-# 8. 启动本地模式 HDFS & YARN
+# 8. Start Local Mode HDFS & YARN
 ##############################################################################
 echo "Starting HDFS daemons locally…"
 hdfs --daemon start namenode
@@ -179,7 +179,7 @@ yarn --daemon start resourcemanager
 yarn --daemon start nodemanager
 
 ##############################################################################
-# 9. 验证进程 & 打印 UI 地址
+# 9. verification & print UI addresses
 ##############################################################################
 echo
 echo "---- Current Hadoop Java Processes ----"

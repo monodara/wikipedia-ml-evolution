@@ -2,7 +2,7 @@
 import sys
 from collections import defaultdict
 
-# 用字典累加每个词对的计数
+# Use dictionary to accumulate counts for each word pair
 counts = defaultdict(int)
 
 for line in sys.stdin:
@@ -12,6 +12,6 @@ for line in sys.stdin:
     except ValueError:
         continue
 
-# 按计数倒序输出
+# output results in descending order by count
 for key, cnt in sorted(counts.items(), key=lambda x: x[1], reverse=False):
     print(f"{key}\t{cnt}")

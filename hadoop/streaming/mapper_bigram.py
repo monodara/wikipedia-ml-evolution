@@ -6,18 +6,18 @@ import io
 import traceback
 
 # ----------------------------------------
-# 支持 stdin 忽略非法 UTF-8 字符
+# support stdin ignore invalid UTF-8
 # ----------------------------------------
 sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8', errors='ignore')
 
 print("DEBUG: mapper started", file=sys.stderr)
 
 # ----------------------------------------
-# 自动定位 stopwords.txt（Hadoop Streaming 会把文件放在当前目录）
+# automatically locate stopwords.txt file   
 # ----------------------------------------
 SW = "stopwords.txt"
 
-# 读入停用词
+# load stopwords
 stopwords_list = []
 try:
     with open(SW, "r", encoding="utf-8", errors="ignore") as f:
@@ -30,7 +30,7 @@ except Exception as e:
     sys.exit(1)
 
 # ----------------------------------------
-# 过滤函数：排除网址和含数字的词
+# filter function: exclude URLs and words with digits
 # ----------------------------------------
 def is_valid_word(word):
     word = word.lower()
@@ -40,10 +40,10 @@ def is_valid_word(word):
         return False
     return True
 
-# 去除标点符号
+# remove punctuation except apostrophe
 translator = str.maketrans("", "", string.punctuation.replace("'", ""))
 
-# 逐行处理标准输入，输出 bigram
+# process standard input line by line, output bigrams
 for line in sys.stdin:
     try:
         line = line.strip()
