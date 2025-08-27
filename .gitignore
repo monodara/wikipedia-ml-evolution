@@ -12,3 +12,4 @@ target/
 .vscode/
 .ipynb_checkpoints/
 */spark-3.3.1-bin-hadoop3/
+artifacts/
