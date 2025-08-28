@@ -29,12 +29,15 @@ This project analyzes the historical evolution of the Wikipedia "Machine learnin
 ├── README.md
 ├── scripts
 │   ├── data_collection.py
-│   ├── generate_article_ids.py
-│   ├── download.sh
-│   └── parse_article.sh
+│   ├── generate_article_ids.py # Choose 1 article in 1 month since 2020
+│   ├── download.sh             # Get Wikipedia html based on article ids
+│   └── parse_article.sh        # Parse raw ml html to text and clean
 ├── spark
 │   ├── scripts
+│   │   ├── spark_setup.sh      # install & configure spark
 │   └── streaming
+│   │   ├── map_reducer_coocur.py
+│   │   ├── map_reducer_ngram.py
 └── stopwords.txt
 ```
 
@@ -44,24 +47,35 @@ This project analyzes the historical evolution of the Wikipedia "Machine learnin
 
 1. Clone the repository and navigate to the project root.
 
-2. Install dependencies:
-   ```bash
-   pip install findspark
-   ```
-
-3. Download and extract Spark (already included under `spark/`):
-   ```bash
-   bash scripts/setup_spark.py
-   ```
-
-4. Generate article revision IDs:
+2. Prepare data <br>    
+    Generate article revision IDs:
    ```bash
    python scripts/generate_article_ids.py
    ```
 
-5. Download and parse Wikipedia articles:
+    Download and parse Wikipedia articles:
    ```bash
    python scripts/data_collection.py
+   ```
+
+3. Install dependencies:
+   ```bash
+   pip install findspark
+   ```
+
+4. Download and extract Spark :
+   ```bash
+   bash spark/scripts/spark_setup.sh
+   ```
+
+5. Download and set up Hadoop:
+   ```bash
+   bash hadoop/scripts/hadoop_setup.sh
+   ```
+
+6. Upload article files to hdfs:
+   ```bash
+   bash upload_to_hdfs.sh
    ```
 
 ---
@@ -78,7 +92,7 @@ spark-submit spark/streaming/map_reducer_coocur.py
 
 ### N-gram Analysis (Spark)
 
-Compute n-gram frequencies per year (default n=3):
+Compute n-gram frequencies per year (change the argument --n):
 
 ```bash
 spark-submit spark/streaming/map_reducer_ngram.py --n 3
