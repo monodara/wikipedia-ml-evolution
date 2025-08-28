@@ -7,5 +7,5 @@ import os
 os.makedirs("wikipedia-ml-raw", exist_ok=True)
 
 # Run shell scripts
-os.system("bash scripts/main.sh data/article-ids.txt")
+os.system("bash scripts/download.sh data/article-ids.txt")
 os.system("bash scripts/parse_article.sh")
