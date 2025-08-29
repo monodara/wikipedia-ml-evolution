@@ -44,7 +44,7 @@ hdfs dfs -rm -r -skipTrash "$HDFS_OUTPUT" 2>/dev/null || true
 STREAMING_JAR="$HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-3.3.3.jar"
 echo "[RUN] Hadoop Streaming co-occur job"
 "$HADOOP_HOME/bin/hadoop" jar "$STREAMING_JAR" \
-  -input  "$HDFS_INPUT"/machine-learning*.txt \
+  -input  "$HDFS_INPUT"/article*.txt \
   -output "$HDFS_OUTPUT" \
   -mapper "$MAPPER" \
   -reducer "$REDUCER" \
