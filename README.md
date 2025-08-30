@@ -19,13 +19,13 @@ This project analyzes the historical evolution of the Wikipedia "Machine learnin
 │   │   ├── hadoop_setup.sh     # Download & install Hadoop
 │   │   ├── upload_to_hdfs.sh   # Upload articles' text file to Hadoop
 │   │   ├── run_bigram.sh       # Run mapper&reducer to analyse bigram
-│   │   ├── run_cooccur.sh       # Run mapper&reducer to analyse co-occurrence
+│   │   └── run_cooccur.sh       # Run mapper&reducer to analyse co-occurrence
 │   └── streaming
 │   │   ├── mapper_cooccur.py
 │   │   ├── reducer_cooccur.py
 │   │   ├── mapper_bigram.py
 │   │   ├── reducer_bigram.py
-│   │   ├── combiner_bigram.py
+│   │   └── combiner_bigram.py
 ├── README.md
 ├── scripts
 │   ├── data_collection.py
@@ -34,10 +34,15 @@ This project analyzes the historical evolution of the Wikipedia "Machine learnin
 │   └── parse_article.sh        # Parse raw ml html to text and clean
 ├── spark
 │   ├── scripts
-│   │   ├── spark_setup.sh      # install & configure spark
+│   │   └── spark_setup.sh      # Install & configure spark
 │   └── streaming
 │   │   ├── map_reducer_coocur.py
-│   │   ├── map_reducer_ngram.py
+│   │   └── map_reducer_ngram.py
+├── analysis
+│   ├── heatmap_utils.py        # Load data from csv file
+│   ├── heatmap_plot.py         # Plot heatmap of co-occurrence pairs
+│   └── trend_plot.py           # Plot trend of top 2 co-occurrence pairs
+├── artifacts                   # Store generated csv files and images
 └── stopwords.txt
 ```
 
@@ -60,20 +65,20 @@ This project analyzes the historical evolution of the Wikipedia "Machine learnin
 
 3. Install dependencies:
    ```bash
-   pip install findspark
+   pip install -r requirements.txt
    ```
 
-4. Download and extract Spark :
+4. Download and extract Spark (for Spark part) :
    ```bash
    bash spark/scripts/spark_setup.sh
    ```
 
-5. Download and set up Hadoop:
+5. Download and set up Hadoop (for Hadoop part):
    ```bash
    bash hadoop/scripts/hadoop_setup.sh
    ```
 
-6. Upload article files to hdfs:
+6. Upload article files to hdfs (for Hadoop part):
    ```bash
    bash upload_to_hdfs.sh
    ```
@@ -100,21 +105,59 @@ spark-submit spark/streaming/map_reducer_ngram.py --n 3
 
 ---
 
-## 📌 Notes
+## 🚀 Analysis Scripts
 
-- All parsed articles are stored in `data/wikipedia-ml/` with filenames like:
-  ```
-  article_Machine learning-Wikipedia_2016_7_14.txt
-  ```
+### Co-occurrence Analysis (Hadoop)
 
-- Stopwords are loaded from `stopwords.txt` and broadcasted in Spark jobs.
+Compute word pair co-occurrence frequencies:
 
-- Both Spark scripts include robust text cleaning and filtering logic:
-  - Remove punctuation, digits, HTML tags, and short or meaningless tokens.
-  - Only retain alphabetic words with length ≥ 3 not in the stopword list.
+```bash
+bash hadoop/scripts/run_coocur.py
+```
+
+### 2-gram Analysis (Hadoop)
+
+Compute 2-gram frequencies:
+
+```bash
+bash hadoop/scripts/run_bigram.py
+```
 
 ---
 
-## 📈 Output
+## 📈 Usage
 
-Each analysis script prints the top 10 results per year to the console. You can modify the scripts to save results to CSV or visualize trends.
+This project explores the evolution of Wikipedia language by analyzing co-occurrence patterns and n-gram frequencies across different time periods. By examining how word pairs and sequences change over time, we gain insights into linguistic trends and topic shifts in Wikipedia edits.
+
+🔥 Plot the heatmap of co-occurrence pairs:
+```bash
+python analysis/heatmap_plot.py
+```
+The output will be like this:
+
+![Heatmap of Co-occurrance throught all years](artifacts/visuals/cooccur_heatmap_total.png)
+
+🔥 Plot the trend of top 3 co-ocur pairs:
+```bash
+python analysis/trend_plot.py
+```
+The output will be like this:
+
+![Heatmap of Co-occurrance throught all years](artifacts/visuals/cooccur_trends.png)
+
+It provides a data-driven lens into:
+
+- The evolution of terminology in machine learning
+
+- The rise and fall of specific concepts or techniques
+
+- The linguistic dynamics of Wikipedia as a living, collaborative corpus
+
+These insights offering researchers and language analysts a way to explore how knowledge is framed and communicated over time. 
+
+
+For example, the heatmap visualizes the frequency of word pairs (co-occurrence) aggregated across selected Wikipedia snapshots. Each cell represents how often a specific word pair appears, allowing us to identify dominant linguistic patterns and emerging terminology.
+
+
+
+
