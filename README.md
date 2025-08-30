@@ -137,7 +137,7 @@ The output will be like this:
 
 ![Heatmap of Co-occurrance throught all years](artifacts/visuals/cooccur_heatmap_total.png)
 
-🔥 Plot the trend of top 3 co-ocur pairs:
+📈 Plot the trend of top 3 co-ocur pairs:
 ```bash
 python analysis/trend_plot.py
 ```
